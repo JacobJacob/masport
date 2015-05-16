@@ -1,0 +1,2 @@
+db_path: 'db/main.db'
+json_path: 'db/json/'
