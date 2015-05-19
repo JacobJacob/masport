@@ -48,6 +48,13 @@ task :run do
   Rake::Task['nmap'].invoke
 end
 
+desc "run daemon"
+task :daemon do
+  syscmd = "nohup ruby #{path}/bin/daemon.rb > /tmp/masport.log &"
+  puts "Running syscmd: #{syscmd}"
+  system(syscmd)
+end
+
 desc "run web"
 task :web do
   syscmd = "ruby #{path}/web/main.rb"
