@@ -1,4 +1,6 @@
-/db/json/*
-/db/dns/*
-/db/main.db
 /log/*
+/db/main.db
+/db/nmap/*
+/db/dnsenum/*
+/db/masscan/*
+/db/whatweb/*
