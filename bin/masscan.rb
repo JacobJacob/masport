@@ -13,6 +13,7 @@ task   = ARGV[0]
 output = ''
 ipaddr = ''
 port   = ''
+rate   = '10000'
 tasks  = SqliteDB.execute("select * from mastask where tid='#{task}'")
 
 if tasks.size == 0 then
@@ -25,7 +26,6 @@ tasks.each do |task|
   ipaddr = task[2]
   port   = task[3]
 end
-rate   = '10000'
 
 cmd    = "masscan -p#{port} --rate=#{rate} -oJ #{output} #{ipaddr}"
 puts 'Running syscmd: '+cmd

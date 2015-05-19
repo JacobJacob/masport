@@ -29,6 +29,8 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   def do_POST req, res 
     header(req, res)
     
+    desc = req.query['desc']
+    desc = '' if desc.nil?
     ipaddr = req.query['ipaddr']
     return if ipaddr.nil?
     port   = req.query['port']
@@ -36,7 +38,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
 
     ipaddr = ipaddr.gsub(/\r\n/, ' ')
     task = Time.now.to_i
-    SqliteDB.execute("insert into mastask (tid,ipaddr,ports,status,data) values (?,?,?,?,?)", [task, ipaddr, port, 'create', ''])
+    SqliteDB.execute("insert into mastask (tid,ipaddr,ports,status,data) values (?,?,?,?,?)", [task, ipaddr, port, 'create', desc])
 
     res.body += 'Add Task OK! '+ipaddr
     res.body += Footer
@@ -77,7 +79,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     body += '<th>Port</th>'
     body += '<th>Status</th>'
     body += '<th>Start/Stop Time</th>'
-    #body += '<th>Data</th>'
+    body += '<th>Data</th>'
     body += '<th>Act</th>'
     body += '</tr>'
     tasks.each do |task|
@@ -88,8 +90,8 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       body += '<td> '+task[3].to_s+'</td>'
       body += '<td> '+task[4].to_s+'</td>'
       body += '<td> '+task[6].to_s+'<br />'+task[7].to_s+'</td>'
-      #body += '<td> '+task[5].to_s+'</td>'
-      body += "<td><a href=\"/task?tid=#{task[1]}\">Detail</a> <a href=\"/task?delid=#{task[1]}\">Del</a> <a href=\"/task?whatweb_tid=#{task[1]}\">Whatweb</a> </td>"
+      body += '<td> '+task[5].to_s+'</td>'
+      body += "<td><a href=\"/task?tid=#{task[1]}\">Masscan</a>  <a href=\"/task?whatweb_tid=#{task[1]}\">Whatweb</a> <a style='color:red;' href=\"/task?delid=#{task[1]}\">Delete</a></td>"
       body += '</tr>'
     end
     body += '</table>'
@@ -99,6 +101,9 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   def get_task(tid)
     body = ''
     output = Cfg.get_json_path + 'masscan.' + tid
+    if !File.exists?(output) then
+      return "Tid file not exist."
+    end
     file = File.read(output)
 
     # 生成的格式rubyhash json无法识别，进行一些处理

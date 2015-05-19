@@ -1,2 +1,3 @@
 db_path: 'db/main.db'
+dns_path: 'db/dns/'
 json_path: 'db/json/'

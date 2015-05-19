@@ -21,9 +21,16 @@ SqliteDB.init()
 
 # Index Page
 server.mount_proc "/" do |req, res|
+	#res['Content-Type'] = 'text/html'
+	#res.body += Header
+	#res.body += Index	
+	#res.body += Footer
+end
+
+server.mount_proc "/add" do |req, res|
 	res['Content-Type'] = 'text/html'
 	res.body += Header
-	res.body += Index	
+	res.body += Add
 	res.body += Footer
 end
 

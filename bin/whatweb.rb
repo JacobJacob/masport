@@ -30,7 +30,7 @@ data_hash.each do |data|
   end
 end
 
-cmd    = "whatweb -q --no-errors -t 255 -i #{winput} --log-json=#{woutput} "
+cmd    = "whatweb --no-errors -t 255 -i #{winput} --log-json=#{woutput} "
 puts 'Running syscmd: '+cmd
 result = `#{cmd}`
 puts result
