@@ -32,6 +32,15 @@ task :whatweb do
   system(syscmd)
 end
 
+desc "run nmap"
+task :nmap do
+  tid = ENV['tid']
+  syscmd = "ruby #{path}/bin/nmap.rb #{tid}"
+  #syscmd = "nohup ruby #{path}/bin/nmap.rb #{tid} > #{path}/log/nmap.#{tid}.log  2>&1 &"
+  puts "Running syscmd: #{syscmd}"
+  system(syscmd)
+end
+
 desc "run web"
 task :web do
   syscmd = "ruby #{path}/web/main.rb"

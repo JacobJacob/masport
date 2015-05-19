@@ -9,16 +9,19 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   def do_GET req, res
     header(req, res)
     del_tid = req.query['delid']
-    show_tid = req.query['tid']
+    masscan_tid = req.query['masscan_tid']
     whatweb_tid = req.query['whatweb_tid']
+    nmap_tid = req.query['nmap_tid']
   
     if del_tid
       SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
       res.body += 'Del Task OK!'
     elsif whatweb_tid
       res.body += whatweb_task(whatweb_tid)
-    elsif show_tid
-      res.body += get_task(show_tid)
+    elsif masscan_tid
+      res.body += masscan_task(masscan_tid)
+    elsif nmap_tid
+      res.body += nmap_task(nmap_tid)
     else
       res.body += list_task()
     end
@@ -91,14 +94,20 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       body += '<td> '+task[4].to_s+'</td>'
       body += '<td> '+task[6].to_s+'<br />'+task[7].to_s+'</td>'
       body += '<td> '+task[5].to_s+'</td>'
-      body += "<td><a href=\"/task?tid=#{task[1]}\">Masscan</a>  <a href=\"/task?whatweb_tid=#{task[1]}\">Whatweb</a> <a style='color:red;' href=\"/task?delid=#{task[1]}\">Delete</a></td>"
+      # Action
+      body += "<td>"
+      body += "<a href=\"/task?masscan_tid=#{task[1]}\">Masscan</a> "
+      body += "<a href=\"/task?whatweb_tid=#{task[1]}\">Whatweb</a> "
+      body += "<a href=\"/task?nmap_tid=#{task[1]}\">Nmap</a> "
+      body += "<a style='color:red;' href=\"/task?delid=#{task[1]}\">Delete</a> "
+      body += "</td>"
       body += '</tr>'
     end
     body += '</table>'
     return body
   end
 
-  def get_task(tid)
+  def masscan_task(tid)
     body = ''
     count = 0
     output = Cfg.get_path('masscan_db') + 'ips.' + tid
@@ -110,6 +119,26 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     File.open(output).each do |line|
       count += 1
       body += line+'<br />'
+    end
+    body += "Count: #{count} <br/>"
+
+    return body
+  end
+
+  def nmap_task(tid)
+    body = ''
+    count = 0
+    output = Cfg.get_path('nmap_db') + 'nmap.' + tid
+    if !File.exists?(output) then
+      return "Tid file not exist."
+    end
+    file = File.read(output)
+
+    File.open(output).each do |line|
+      if !line.start_with?('#') and !line.include?('Status: Up')
+        count += 1
+        body += line+'<br />' 
+      end
     end
     body += "Count: #{count} <br/>"
 
