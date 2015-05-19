@@ -41,6 +41,13 @@ task :nmap do
   system(syscmd)
 end
 
+desc "run all"
+task :run do
+  Rake::Task['masscan'].invoke
+  Rake::Task['whatweb'].invoke
+  Rake::Task['nmap'].invoke
+end
+
 desc "run web"
 task :web do
   syscmd = "ruby #{path}/web/main.rb"

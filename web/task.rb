@@ -95,15 +95,39 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       body += '<td> '+task[6].to_s+'<br />'+task[7].to_s+'</td>'
       body += '<td> '+task[5].to_s+'</td>'
       # Action
-      body += "<td>"
-      body += "<a href=\"/task?masscan_tid=#{task[1]}\">Masscan</a> "
-      body += "<a href=\"/task?whatweb_tid=#{task[1]}\">Whatweb</a> "
-      body += "<a href=\"/task?nmap_tid=#{task[1]}\">Nmap</a> "
-      body += "<a style='color:red;' href=\"/task?delid=#{task[1]}\">Delete</a> "
-      body += "</td>"
+      body += "<td>"+action_str(task[1])+"</td>"
       body += '</tr>'
     end
     body += '</table>'
+    return body
+  end
+
+  def action_str(tid)
+    body = ''
+    masscan_file = Cfg.get_path('masscan_db') + 'masscan.' + tid
+    masscan_file = false if !File.exists?(masscan_file)
+    whatweb_file = Cfg.get_path('whatweb_db') + 'whatweb.' + tid
+    whatweb_file = false if !File.exists?(whatweb_file)
+    nmap_file = Cfg.get_path('nmap_db') + 'nmap.' + tid
+    nmap_file = false if !File.exists?(nmap_file)
+
+    if masscan_file
+      body += "<a href=\"/task?masscan_tid=#{tid}\">Masscan</a> "
+    else
+      body += "Masscan "
+    end
+    if whatweb_file
+      body += "<a href=\"/task?whatweb_tid=#{tid}\">Whatweb</a> "
+    else
+      body += "Whatweb "
+    end
+    if nmap_file
+      body += "<a href=\"/task?nmap_tid=#{tid}\">Nmap</a> "
+    else
+      body += "Nmap "
+    end
+
+    body += "<a style='color:red;' href=\"/task?delid=#{tid}\">Delete</a> "
     return body
   end
 

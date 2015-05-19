@@ -45,9 +45,10 @@ Add =  '''
 1-65535<br/>
 
 <b>Rake cmd: </b><br />
-rake dns domain=abc.com<br/>
-rake scan tid=x<br/>
+rake dnsenum domain=abc.com<br/>
+rake masscan tid=x<br/>
 rake whatweb tid=x<br/>
+rake nmap tid=x<br/>
 
 <br /><br />
 </form><br />
