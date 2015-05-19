@@ -45,7 +45,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def whatweb_task(tid)
-    output = Cfg.get_json_path + 'whatweb.' + tid
+    output = Cfg.get_path('whatweb_db') + 'whatweb.' + tid
     file = ''
     body = ''
     if !File.exists?(output) then
@@ -59,7 +59,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     data_hash = JSON.parse(file)
     body += "Count: #{data_hash.size} <br/>"
     data_hash.each do |data|
-      body += "<li> #{data['target']}: #{} <br/>"
+      body += "<li><a href='#{data['target']}' >#{data['target']} #{}</a> <br/>"
       data['plugins'].each do |key,value|
         body += " #{key}: #{value['string']} "
       end
@@ -100,21 +100,19 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
 
   def get_task(tid)
     body = ''
-    output = Cfg.get_json_path + 'masscan.' + tid
+    count = 0
+    output = Cfg.get_path('masscan_db') + 'ips.' + tid
     if !File.exists?(output) then
       return "Tid file not exist."
     end
     file = File.read(output)
 
-    # 生成的格式rubyhash json无法识别，进行一些处理
-    file = '['+file[0..-17]+']'
-    data_hash = JSON.parse(file)
-    body += "Count: #{data_hash.size} <br/>"
-    data_hash.each do |data|
-      data['ports'].each do |port|
-        body += "#{data['ip']}:#{port['port']} <br/>"
-      end
+    File.open(output).each do |line|
+      count += 1
+      body += line+'<br />'
     end
+    body += "Count: #{count} <br/>"
+
     return body
   end
 

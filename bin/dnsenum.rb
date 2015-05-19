@@ -10,8 +10,8 @@ end
 
 task   = ARGV[0]
 thread = '64'
-output = Cfg.get_dns_path+task+'_out.xml'
-dict_path = Cfg.get_config_path+'/dns.txt'
+output = Cfg.get_path('dnsenum_db')+task+'_out.xml'
+dict_path = Cfg.get_path('config_dir')+'dns.txt'
 
 cmd    = "dnsenum #{task} -f #{dict_path} --nocolor --private --noreverse --threads #{thread} -o #{output}"
 puts 'Running syscmd: '+cmd

@@ -1,3 +1,4 @@
 /db/json/*
 /db/dns/*
 /db/main.db
+/log/*

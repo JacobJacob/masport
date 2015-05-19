@@ -5,7 +5,7 @@ require_relative 'config'
 
 class SqliteDB
 
-  @@db  = SQLite3::Database.new Cfg.get_db_path
+  @@db  = SQLite3::Database.new Cfg.get_path('sqlite_db')
   @@mux = Mutex.new
 
   def self.init()

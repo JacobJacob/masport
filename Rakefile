@@ -6,18 +6,19 @@ task :default do
 end
 
 desc "run dnsenum"
-task :dns do
+task :dnsenum do
   domain = ENV['domain']
-  syscmd = "cd #{path}/db/dns/ && nohup ruby #{path}/bin/dnsenum.rb #{domain} > #{path}/log/dnsenum.#{domain}.log  2>&1 &"
+  syscmd = "cd #{path}/db/dnsenum/ && ruby #{path}/bin/dnsenum.rb #{domain}"
+  #syscmd = "cd #{path}/db/dnsenum/ && nohup ruby #{path}/bin/dnsenum.rb #{domain} > #{path}/log/dnsenum.#{domain}.log  2>&1 &"
   puts "Running syscmd: #{syscmd}"
   system(syscmd)
 end
 
 desc "run masscan"
-task :scan do
+task :masscan do
   tid = ENV['tid']
-  #syscmd = "ruby #{path}/bin/masscan.rb #{tid}"
-  syscmd = "nohup ruby #{path}/bin/masscan.rb #{tid} > #{path}/log/masscan.#{tid}.log  2>&1 &"
+  syscmd = "ruby #{path}/bin/masscan.rb #{tid}"
+  #syscmd = "nohup ruby #{path}/bin/masscan.rb #{tid} > #{path}/log/masscan.#{tid}.log  2>&1 &"
   puts "Running syscmd: #{syscmd}"
   system(syscmd)
 end
@@ -25,7 +26,8 @@ end
 desc "run whatweb"
 task :whatweb do
   tid = ENV['tid']
-  syscmd = "nohup ruby #{path}/bin/whatweb.rb #{tid} > #{path}/log/whatweb.#{tid}.log  2>&1 &"
+  syscmd = "ruby #{path}/bin/whatweb.rb #{tid}"
+  #syscmd = "nohup ruby #{path}/bin/whatweb.rb #{tid} > #{path}/log/whatweb.#{tid}.log  2>&1 &"
   puts "Running syscmd: #{syscmd}"
   system(syscmd)
 end
