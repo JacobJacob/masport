@@ -9,11 +9,10 @@ if ARGV[0].nil? then
 end
 
 task   = ARGV[0]
-thread = '64'
 output = Cfg.get_path('dnsenum_db')+task+'_out.xml'
 dict_path = Cfg.get_path('config_dir')+'dns.txt'
 
-cmd    = "dnsenum #{task} -f #{dict_path} --nocolor --private --noreverse --threads #{thread} -o #{output}"
+cmd = Cfg.get('dnsenum_path')+" #{task} -f #{dict_path} -o #{output} "+Cfg.get('dnsenum_args')
 puts 'Running syscmd: '+cmd
 
 result = `#{cmd}`

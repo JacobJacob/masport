@@ -10,7 +10,7 @@ Header = '''<html>
 <div class="row">
 <div class="col-md-12">
 <h3><a href="/">-= Masport=-</a> <small>Web</small></h3>
-<input type="button" value="<< Back" onclick="window.history.go(-1);">
+<a onclick="window.history.go(-1);">&lt;&lt;Back </a> | 
 <a href="/task"> Task List</a> | <a href="/add"> Task Add</a><br /><br />
 '''
 

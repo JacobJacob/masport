@@ -7,8 +7,11 @@ if ARGV[0].nil? then
 end
 
 require_relative '../lib/config'
+require_relative '../lib/sqlite'
 
 task = ARGV[0]
+SqliteDB.update_status(task,'nmap..')
+
 input  = Cfg.get_path('masscan_db')+'ips.'+task
 output = Cfg.get_path('nmap_db')+'nmap.'+task
 
@@ -23,9 +26,10 @@ File.open(input).each do |line|
   ip = ary[0]
   port = ary[1]
 
-  cmd = "nmap #{ip} -p #{port} -Pn -oG #{output} --append-output"
+  cmd = Cfg.get('nmap_path')+" #{ip} -p #{port} -oG #{output} --append-output "+Cfg.get('nmap_args')
   puts 'Running syscmd: '+cmd
   result = `#{cmd}`
   puts result
 end
 
+SqliteDB.update_status(task,'finish')

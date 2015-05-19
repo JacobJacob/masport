@@ -10,11 +10,11 @@ require 'json'
 require_relative '../lib/sqlite'
 
 task   = ARGV[0]
+SqliteDB.update_status(task,'mass..')
 output = ''
 ips_output = ''
 ipaddr = ''
 port   = ''
-rate   = '10000'
 tasks  = SqliteDB.execute("select * from mastask where tid='#{task}'")
 
 if tasks.size == 0 then
@@ -29,7 +29,7 @@ tasks.each do |task|
   port   = task[3]
 end
 
-cmd    = "masscan -p#{port} --rate=#{rate} -oJ #{output} #{ipaddr}"
+cmd  = Cfg.get('masscan_path')+" -p#{port} -oJ #{output} #{ipaddr} "+Cfg.get('masscan_args')
 puts 'Running syscmd: '+cmd
 
 result = `#{cmd}`

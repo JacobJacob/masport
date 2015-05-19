@@ -23,6 +23,10 @@ class SqliteDB
     '''
   end
 
+  def self.update_status(tid, stat)
+    self.execute("update mastask set status='#{stat}' where tid='#{tid}' ")
+  end
+
   def self.execute(sql, ary=nil)
     @@mux.synchronize{
       begin
@@ -39,9 +43,5 @@ class SqliteDB
     }
   end
 
-end
-
-if $0 == __FILE__
-  puts 123
 end
 

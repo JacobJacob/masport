@@ -35,11 +35,13 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     desc = req.query['desc']
     desc = '' if desc.nil?
     ipaddr = req.query['ipaddr']
-    return if ipaddr.nil?
+    return if ipaddr.nil? 
+    ipaddr = ipaddr.gsub(/\r\n/, ' ')
+    return if (ipaddr =~ /^[\s\d,-\/]*$/).nil?
     port   = req.query['port']
     return if port.nil?
+    return if (port =~ /^[\s\d,-\/]*$/).nil?
 
-    ipaddr = ipaddr.gsub(/\r\n/, ' ')
     task = Time.now.to_i
     SqliteDB.execute("insert into mastask (tid,ipaddr,ports,status,data) values (?,?,?,?,?)", [task, ipaddr, port, 'create', desc])
 
@@ -92,7 +94,9 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       body += '<td> '+task[2].to_s+'</td>'
       body += '<td> '+task[3].to_s+'</td>'
       body += '<td> '+task[4].to_s+'</td>'
-      body += '<td> '+task[6].to_s+'<br />'+task[7].to_s+'</td>'
+      st = DateTime.parse task[6].to_s
+      st = st.mday.to_s+'-'+st.hour.to_s+':'+st.min.to_s
+      body += '<td> '+st+'<br />'+task[7].to_s+'</td>'
       body += '<td> '+task[5].to_s+'</td>'
       # Action
       body += "<td>"+action_str(task[1])+"</td>"
@@ -112,22 +116,22 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     nmap_file = false if !File.exists?(nmap_file)
 
     if masscan_file
-      body += "<a href=\"/task?masscan_tid=#{tid}\">Masscan</a> "
+      body += "<a title='Masscan' href='/task?masscan_tid=#{tid}'>Masscan</a> "
     else
       body += "Masscan "
     end
     if whatweb_file
-      body += "<a href=\"/task?whatweb_tid=#{tid}\">Whatweb</a> "
+      body += "<a title='Whatweb' href='/task?whatweb_tid=#{tid}'>Whatweb</a> "
     else
       body += "Whatweb "
     end
     if nmap_file
-      body += "<a href=\"/task?nmap_tid=#{tid}\">Nmap</a> "
+      body += "<a title='Nmap' href='/task?nmap_tid=#{tid}'>Nmap</a> "
     else
       body += "Nmap "
     end
 
-    body += "<a style='color:red;' href=\"/task?delid=#{tid}\">Delete</a> "
+    body += "<a title='Delete' style='color:red;' href='/task?delid=#{tid}'>Delete</a> "
     return body
   end
 

@@ -9,4 +9,8 @@ class Cfg
     @@path+@@config[path]
   end
 
+  def Cfg.get(key)
+    @@config[key]
+  end
+
 end
