@@ -1,0 +1,8 @@
+# Nmap 6.25 scan initiated Tue May 19 16:25:38 2015 as: nmap -p 80 -oG /opt/project/masport/lib/../db/nmap/nmap.1432052709 --append-output -Pn 42.159.26.151
+Host: 42.159.26.151 ()	Status: Up
+Host: 42.159.26.151 ()	Ports: 80/open/tcp//http//
+# Nmap done at Tue May 19 16:25:39 2015 -- 1 IP address (1 host up) scanned in 1.20 seconds
+# Nmap 6.25 scan initiated Tue May 19 16:25:40 2015 as: nmap -p 80 -oG /opt/project/masport/lib/../db/nmap/nmap.1432052709 --append-output -Pn 211.100.19.122
+Host: 211.100.19.122 (mail.fastweb.com.cn)	Status: Up
+Host: 211.100.19.122 (mail.fastweb.com.cn)	Ports: 80/open/tcp//http//
+# Nmap done at Tue May 19 16:25:40 2015 -- 1 IP address (1 host up) scanned in 0.24 seconds

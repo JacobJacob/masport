@@ -1,6 +1,5 @@
 /log/*
 /db/main.db
-/db/nmap/*
 /db/dnsenum/*
 /db/masscan/*
 /db/whatweb/*

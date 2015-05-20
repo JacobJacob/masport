@@ -108,7 +108,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
 
   def action_str(tid)
     body = ''
-    masscan_file = Cfg.get_path('masscan_db') + 'masscan.' + tid
+    masscan_file = Cfg.get_path('masscan_db') + 'ips.' + tid
     masscan_file = false if !File.exists?(masscan_file)
     whatweb_file = Cfg.get_path('whatweb_db') + 'whatweb.' + tid
     whatweb_file = false if !File.exists?(whatweb_file)
