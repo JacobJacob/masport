@@ -12,6 +12,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     masscan_tid = req.query['masscan_tid']
     whatweb_tid = req.query['whatweb_tid']
     nmap_tid = req.query['nmap_tid']
+    port_tid = req.query['port_tid']
   
     if del_tid
       SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
@@ -22,6 +23,8 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       res.body += masscan_task(masscan_tid)
     elsif nmap_tid
       res.body += nmap_task(nmap_tid)
+    elsif port_tid
+      res.body += prot_audit_task(port_tid)
     else
       res.body += list_task()
     end
@@ -131,6 +134,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       body += "Nmap "
     end
 
+    body += "<a title='Portaudit' href='/task?port_tid=#{tid}'>PortAudit</a> "
     body += "<a title='Delete' style='color:red;' href='/task?delid=#{tid}'>Delete</a> "
     return body
   end
@@ -169,6 +173,45 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       end
     end
     body += "Count: #{count} <br/>"
+
+    return body
+  end
+
+  def prot_audit_task(tid)
+    body = ''
+    scan_port  =  Cfg.get_path('masscan_db') + 'ips.' + tid
+    acl_port = Cfg.get_path('db_dir') + 'open-6-2.txt'
+    if !File.exists?(scan_port) then
+      return "Tid file not exist."
+    end
+
+    acl_ports = []
+    File.open(acl_port).each do |line|
+      acl_ports << line.chomp.strip
+    end
+
+    scan_ports = []
+    File.open(scan_port).each do |line|
+      scan_ports << line.chomp.strip
+    end
+
+    in_acl = []
+    out_acl = []
+    scan_ports.each do |item|
+      if acl_ports.include? item
+        in_acl << item
+      else
+        out_acl << item
+      end
+    end
+    body += "acls.size #{acl_ports.size}<br/>"
+    body += "scan.size #{scan_ports.size}<br/>"
+    body += "<hr/>"
+    body += "in acl:  #{in_acl.size}<br/>"
+    in_acl.each{|i| body+="#{i}<br/>" }
+    body += "<hr/>"
+    body +=  "out acl: #{out_acl.size}<br/>"
+    out_acl.each{|i| body+="#{i}<br/>" }
 
     return body
   end
