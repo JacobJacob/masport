@@ -15,7 +15,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     port_tid = req.query['port_tid']
   
     if del_tid
-      SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
+      #SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
       res.body += 'Del Task OK!'
     elsif whatweb_tid
       res.body += whatweb_task(whatweb_tid)
@@ -52,30 +52,6 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     res.body += Footer
   end
 
-  def whatweb_task(tid)
-    output = Cfg.get_path('whatweb_db') + 'whatweb.' + tid
-    file = ''
-    body = ''
-    if !File.exists?(output) then
-      return "Tid file not exist."
-    end
-    # 生成的格式rubyhash json无法识别，进行一些处理
-    File.open(output).each do |line|
-      file += line+','
-    end
-    file = '['+file[0..-2]+']'
-    data_hash = JSON.parse(file)
-    body += "Count: #{data_hash.size} <br/>"
-    data_hash.each do |data|
-      body += "<li><a href='#{data['target']}' >#{data['target']} #{}</a> <br/>"
-      data['plugins'].each do |key,value|
-        body += " #{key}: #{value['string']} "
-      end
-      body += '</li><hr/>'
-    end
-    return body
-  end
-
   def list_task()
     body = ''
     tasks = SqliteDB.execute("select * from mastask")
@@ -86,7 +62,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     body += '<th>Ipaddr</th>'
     body += '<th>Port</th>'
     body += '<th>Status</th>'
-    body += '<th>Start/Stop Time</th>'
+    body += '<th>Time</th>'
     body += '<th>Data</th>'
     body += '<th>Act</th>'
     body += '</tr>'
@@ -94,8 +70,9 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
      body += '<tr>'
       body += '<td> '+task[0].to_s+'</td>'
       body += '<td> '+task[1].to_s+'</td>'
-      body += '<td> '+task[2].to_s+'</td>'
-      body += '<td> '+task[3].to_s+'</td>'
+      body += "<td title='#{task[2].to_s}'> "+task[2].to_s[0..12]+'..</td>'
+      body += "<td title='#{task[3].to_s}'> "+task[3].to_s[0..8]+'..</td>'
+      #body += '<td title="test"> '+task[3].to_s+'</td>'
       body += '<td> '+task[4].to_s+'</td>'
       st = DateTime.parse task[6].to_s
       st = st.mday.to_s+'-'+st.hour.to_s+':'+st.min.to_s
@@ -140,45 +117,109 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def masscan_task(tid)
-    body = ''
+    body = '<h2>Masscan</h2>'
     count = 0
     output = Cfg.get_path('masscan_db') + 'ips.' + tid
     if !File.exists?(output) then
       return "Tid file not exist."
     end
-    file = File.read(output)
+
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Ipaddr</th>'
+    body += '<th>Port</th>'
+    body += '<th>Status</th>'
+    body += '</tr>'
 
     File.open(output).each do |line|
       count += 1
-      body += line+'<br />'
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{tid}</td>"
+      body += "<td>#{line.split(':')[0]}</td>"
+      body += "<td>#{line.split(':')[1]}</td>"
+      body += "<td>open</td>"
+      body += '</tr>'
     end
-    body += "Count: #{count} <br/>"
+    body += '</table>'
+    #body += "Count: #{count} <br/>"
 
     return body
   end
 
+  def whatweb_task(tid)
+    output = Cfg.get_path('whatweb_db') + 'whatweb.' + tid
+    file = ''
+    body = '<h2>Whatweb</h2>'
+    if !File.exists?(output) then
+      return "Tid file not exist."
+    end
+    
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Url</th>'
+    body += '<th>Data</th>'
+    body += '</tr>'
+    
+    # 生成的格式rubyhash json无法识别，进行一些处理
+    File.open(output).each do |line|
+      file += line+','
+    end
+    file = '['+file[0..-2]+']'
+    data_hash = JSON.parse(file)
+    # end path
+    count = 0
+    data_hash.each do |data|
+      count += 1
+      plug = ''
+      data['plugins'].each do |key,value|
+        plug += " #{key}: #{value['string']} "
+      end
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{data['target']}</td>"
+      body += "<td>#{plug}</td>"
+      body += '</tr>'
+    end
+    body += '</table>'
+    return body
+  end
+
   def nmap_task(tid)
-    body = ''
+    body = '<h2>Nmap</h2>'
     count = 0
     output = Cfg.get_path('nmap_db') + 'nmap.' + tid
     if !File.exists?(output) then
       return "Tid file not exist."
     end
-    file = File.read(output)
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Data</th>'
+    body += '</tr>'
 
     File.open(output).each do |line|
       if !line.start_with?('#') and !line.include?('Status: Up')
         count += 1
-        body += line+'<br />' 
+        body += '<tr>'
+        body += "<td>#{count}</td>"
+        body += "<td>#{tid}</td>"
+        body += "<td>#{line.split('(')[0]}</td>"
+        body += "<td>#{line.split(')')[1]}</td>"
+        body += '</tr>'
       end
     end
-    body += "Count: #{count} <br/>"
-
+    body += '</table>'
     return body
   end
 
   def prot_audit_task(tid)
-    body = ''
+    body = '<h2>PortAudit</h2>'
     scan_port  =  Cfg.get_path('masscan_db') + 'ips.' + tid
     acl_port = Cfg.get_path('db_dir') + 'open-6-2.txt'
     if !File.exists?(scan_port) then
@@ -196,23 +237,91 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     end
 
     in_acl = []
+    web_acl = []
     out_acl = []
     scan_ports.each do |item|
       if acl_ports.include? item
         in_acl << item
+      elsif item.end_with?(':80') or item.end_with?('443')
+        web_acl << item
       else
         out_acl << item
       end
     end
-    body += "acls.size #{acl_ports.size}<br/>"
-    body += "scan.size #{scan_ports.size}<br/>"
-    body += "<hr/>"
-    body += "in acl:  #{in_acl.size}<br/>"
-    in_acl.each{|i| body+="#{i}<br/>" }
-    body += "<hr/>"
-    body +=  "out acl: #{out_acl.size}<br/>"
-    out_acl.each{|i| body+="#{i}<br/>" }
+    #body += "acls.size #{acl_ports.size}<br/>"
+    #body += "scan.size #{scan_ports.size}<br/>"
 
+    body += '<ul class="nav nav-tabs" id="myTab"> '
+    body += '<li class="active"><a href="#home"  data-toggle="tab">合法ACL</a></li> '
+    body += '<li><a href="#profile" data-toggle="tab">非法WEB ACL</a></li> '
+    body += '<li><a href="#messages" data-toggle="tab">非法ACL</a></li> '
+    body += '</ul> '
+    body += '<div class="tab-content"> '
+    
+    body += '<div class="tab-pane active" id="home">'
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Port</th>'
+    body += '</tr>'
+    count = 0
+    in_acl.each{|i|
+      count += 1
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{tid}</td>"
+      body += "<td>#{i.split(':')[0]}</td>"
+      body += "<td>#{i.split(':')[1]}</td>"
+      body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
+    
+    body += '<div class="tab-pane" id="profile">'
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Port</th>'
+    body += '</tr>'
+    count = 0
+    web_acl.each{|i|
+      count += 1
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{tid}</td>"
+      body += "<td>#{i.split(':')[0]}</td>"
+      body += "<td>#{i.split(':')[1]}</td>"
+      body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
+    
+    body += '<div class="tab-pane" id="messages">'
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Port</th>'
+    body += '</tr>'
+    count = 0
+    out_acl.each{|i|
+      count += 1
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{tid}</td>"
+      body += "<td>#{i.split(':')[0]}</td>"
+      body += "<td>#{i.split(':')[1]}</td>"
+      body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
+    body += '</div> '
+    
     return body
   end
 
