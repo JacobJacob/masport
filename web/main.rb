@@ -34,6 +34,13 @@ server.mount_proc "/add" do |req, res|
 	res.body += Footer
 end
 
+server.mount_proc "/about" do |req, res|
+	res['Content-Type'] = 'text/html'
+	res.body += Header
+	res.body += About
+	res.body += Footer
+end
+
 # Task Show
 server.mount '/task', Task
 

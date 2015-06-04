@@ -24,7 +24,7 @@ Header = '''<html>
       <ul class="nav navbar-nav">
         <li class="active.bk"><a href="/task">Task</a></li>
         <li><a href="/add">Add Task</a></li>
-        <li><a href="#">About</a></li>
+        <li><a href="/about">About</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
@@ -50,8 +50,8 @@ Index =  '''
 '''
 
 Add =  '''
+<h2>New Task</h2>
 <form action="/task" method="post">
-<b>New Task : </b>
 <input type="submit" value="Add Task >>"><br />
 <textarea  rows="8" cols="48" name="ipaddr"></textarea><br />
 <b>Port : </b><br />
@@ -67,13 +67,14 @@ Add =  '''
 80<br/>
 80,8080<br/>
 1-65535<br/>
+</form><br />
+'''
 
+About =  '''
+<h2>About</h2>
 <b>Rake cmd: </b><br />
 rake dnsenum domain=abc.com<br/>
 rake masscan tid=x<br/>
 rake whatweb tid=x<br/>
 rake nmap tid=x<br/>
-
-<br /><br />
-</form><br />
 '''

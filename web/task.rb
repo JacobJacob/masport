@@ -53,7 +53,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
   end
 
   def list_task()
-    body = ''
+    body = '<h2>Task List</h2>'
     tasks = SqliteDB.execute("select * from mastask")
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
