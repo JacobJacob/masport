@@ -2,8 +2,9 @@
 class Task < WEBrick::HTTPServlet::AbstractServlet
 
   def header(req, res)
-  res['Content-Type'] = 'text/html'
-  res.body += Header
+    Basic_auth.authenticate req, res
+    res['Content-Type'] = 'text/html'
+    res.body += Header
   end
 
   def do_GET req, res
@@ -248,17 +249,23 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
         out_acl << item
       end
     end
+
+    # 过期ACL
+    expired_acl = acl_ports - in_acl
     #body += "acls.size #{acl_ports.size}<br/>"
     #body += "scan.size #{scan_ports.size}<br/>"
 
     body += '<ul class="nav nav-tabs" id="myTab"> '
     body += '<li class="active"><a href="#home"  data-toggle="tab">合法ACL</a></li> '
+    body += '<li><a href="#expired_acl" data-toggle="tab">过期ACL</a></li> '
     body += '<li><a href="#profile" data-toggle="tab">非法WEB ACL</a></li> '
     body += '<li><a href="#messages" data-toggle="tab">非法ACL</a></li> '
     body += '</ul> '
     body += '<div class="tab-content"> '
     
+    # in acl
     body += '<div class="tab-pane active" id="home">'
+    body += '<p>扫描全部开放端口,在访问控制列表中允许开放端口</p>'
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
     body += '<th>Id</th>'
@@ -278,8 +285,33 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     }
     body += '</table>'
     body += "</div>"
+
+    # expired acl
+    body += '<div class="tab-pane" id="expired_acl">'
+    body += '<p>在访问控制列表中允许开放端口，但是在实际扫描中未开启或者已下线的端口</p>'
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Port</th>'
+    body += '</tr>'
+    count = 0
+    expired_acl.each{|i|
+      count += 1
+      body += '<tr>'
+      body += "<td>#{count}</td>"
+      body += "<td>#{tid}</td>"
+      body += "<td>#{i.split(':')[0]}</td>"
+      body += "<td>#{i.split(':')[1]}</td>"
+      body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
     
+    # out acl web
     body += '<div class="tab-pane" id="profile">'
+    body += '<p>扫描全部开放端口,在访问控制列表中不存在WEB端口</p>'
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
     body += '<th>Id</th>'
@@ -300,7 +332,9 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     body += '</table>'
     body += "</div>"
     
+    # out acl 
     body += '<div class="tab-pane" id="messages">'
+    body += '<p>扫描全部开放端口,在访问控制列表中不存在其他端口</p>'
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
     body += '<th>Id</th>'

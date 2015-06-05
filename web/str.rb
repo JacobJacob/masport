@@ -24,7 +24,7 @@ Header = '''<html>
       <ul class="nav navbar-nav">
         <li class="active.bk"><a href="/task">Task</a></li>
         <li><a href="/add">Add Task</a></li>
-        <li><a href="/about">About</a></li>
+        <li><a href="/conf">Config</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
@@ -47,6 +47,12 @@ Footer = '''
 '''
 
 Index =  '''
+<h2>Index</h2>
+<b>Rake cmd: </b><br />
+rake dnsenum domain=abc.com<br/>
+rake masscan tid=x<br/>
+rake whatweb tid=x<br/>
+rake nmap tid=x<br/>
 '''
 
 Add =  '''
@@ -70,11 +76,3 @@ Add =  '''
 </form><br />
 '''
 
-About =  '''
-<h2>About</h2>
-<b>Rake cmd: </b><br />
-rake dnsenum domain=abc.com<br/>
-rake masscan tid=x<br/>
-rake whatweb tid=x<br/>
-rake nmap tid=x<br/>
-'''

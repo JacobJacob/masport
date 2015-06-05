@@ -4,6 +4,8 @@ require 'webrick'
 require 'json'
 require "digest/md5"
 require_relative './task'
+require_relative './conf'
+require_relative './auth'
 require_relative './str'
 require_relative '../lib/sqlite'
 require_relative '../lib/config'
@@ -21,28 +23,24 @@ SqliteDB.init()
 
 # Index Page
 server.mount_proc "/" do |req, res|
-	#res['Content-Type'] = 'text/html'
-	#res.body += Header
-	#res.body += Index	
-	#res.body += Footer
+	Basic_auth.authenticate req, res
+	res['Content-Type'] = 'text/html'
+	res.body += Header
+	res.body += Index	
+	res.body += Footer
 end
 
 server.mount_proc "/add" do |req, res|
+	Basic_auth.authenticate req, res
 	res['Content-Type'] = 'text/html'
 	res.body += Header
 	res.body += Add
 	res.body += Footer
 end
 
-server.mount_proc "/about" do |req, res|
-	res['Content-Type'] = 'text/html'
-	res.body += Header
-	res.body += About
-	res.body += Footer
-end
-
 # Task Show
 server.mount '/task', Task
+server.mount '/conf', Conf
 
 #WEBrick::Utils.su 'nobody'
 WEBrick::Daemon.start
