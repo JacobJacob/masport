@@ -179,6 +179,17 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       data['plugins'].each do |key,value|
         plug += " #{key}: #{value['string']} "
       end
+
+      plug.gsub!('WWW-Authenticate','<font color="blue">WWW-Authenticate</font>')
+      plug.gsub!('X-Powered-By','<font color="blue">X-Powered-By</font>')
+      plug.gsub!('Tengine','<font color="green">Tengine</font>')
+      plug.gsub!('Nginx','<font color="green">Nginx</font>')
+      plug.gsub!('nginx','<font color="green">nginx</font>')
+      plug.gsub!('Apache','<font color="green">Apache</font>')
+      plug.gsub!('登陆','<font color="red">登陆</font>')
+      plug.gsub!('管理','<font color="red">管理</font>')
+      plug.gsub!('admin','<font color="red">admin</font>')
+
       body += '<tr>'
       body += "<td>#{count}</td>"
       body += "<td>#{data['target']}</td>"
@@ -191,11 +202,38 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
 
   def nmap_task(tid)
     body = '<h2>Nmap</h2>'
-    count = 0
     output = Cfg.get_path('nmap_db') + 'nmap.' + tid
     if !File.exists?(output) then
       return "Tid file not exist."
     end
+
+    web_port = []
+    know_port = []
+    other_port = []
+    ary = ['smtp','mysql','ssh','telnet','ftp','nfs','redis','pop','snmp','domain']
+    File.open(output).each do |line|
+      if !line.start_with?('#') and !line.include?('Status: Up')
+        if line.include?('http') or line.include?('https')
+          web_port << line
+        #elsif line.include?('smtp') or line.include?('mysql') or line.include?('ssh') or line.include?('telnet') or line.include?('pop') or line.include?('snmp') or line.include?('ftp')
+        elsif ary.any?{|word|line.include?(word)}
+          know_port << line
+        else
+          other_port << line
+        end
+      end
+    end
+
+    body += '<ul class="nav nav-tabs" id="myTab"> '
+    body += '<li class="active"><a href="#web_port"  data-toggle="tab">WEB端口</a></li> '
+    body += '<li><a href="#know_port" data-toggle="tab">已知端口</a></li> '
+    body += '<li><a href="#other_port" data-toggle="tab">其他端口</a></li> '
+    body += '</ul> '
+    body += '<div class="tab-content"> '
+
+    # WEB端口
+    count = 0
+    body += '<div class="tab-pane active" id="web_port">'
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
     body += '<th>Id</th>'
@@ -203,9 +241,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     body += '<th>Host</th>'
     body += '<th>Data</th>'
     body += '</tr>'
-
-    File.open(output).each do |line|
-      if !line.start_with?('#') and !line.include?('Status: Up')
+    web_port.each{|line|
         count += 1
         body += '<tr>'
         body += "<td>#{count}</td>"
@@ -213,9 +249,55 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
         body += "<td>#{line.split('(')[0]}</td>"
         body += "<td>#{line.split(')')[1]}</td>"
         body += '</tr>'
-      end
-    end
+    }
     body += '</table>'
+    body += "</div>"
+
+    # 已知端口
+    count = 0
+    body += '<div class="tab-pane" id="know_port">'
+    body += "<p>#{ary.join(', ')}</p>"
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Data</th>'
+    body += '</tr>'
+    know_port.each{|line|
+        count += 1
+        body += '<tr>'
+        body += "<td>#{count}</td>"
+        body += "<td>#{tid}</td>"
+        body += "<td>#{line.split('(')[0]}</td>"
+        body += "<td>#{line.split(')')[1]}</td>"
+        body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
+
+    # 已知端口
+    count = 0
+    body += '<div class="tab-pane" id="other_port">'
+    body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
+    body += '<tr>'
+    body += '<th>Id</th>'
+    body += '<th>Tid</th>'
+    body += '<th>Host</th>'
+    body += '<th>Data</th>'
+    body += '</tr>'
+    other_port.each{|line|
+        count += 1
+        body += '<tr>'
+        body += "<td>#{count}</td>"
+        body += "<td>#{tid}</td>"
+        body += "<td>#{line.split('(')[0]}</td>"
+        body += "<td>#{line.split(')')[1]}</td>"
+        body += '</tr>'
+    }
+    body += '</table>'
+    body += "</div>"
+
     return body
   end
 
