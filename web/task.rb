@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 class Task < WEBrick::HTTPServlet::AbstractServlet
 
@@ -16,7 +17,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     port_tid = req.query['port_tid']
   
     if del_tid
-      #SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
+      SqliteDB.execute("delete from mastask where tid='#{del_tid}'")
       res.body += 'Del Task OK!'
     elsif whatweb_tid
       res.body += whatweb_task(whatweb_tid)
@@ -161,7 +162,7 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
     body += '<table style="width:100%" class="table table-bordered table-hover table-striped">'
     body += '<tr>'
     body += '<th>Id</th>'
-    body += '<th>Url</th>'
+    body += '<th>Url</th width="20">'
     body += '<th>Data</th>'
     body += '</tr>'
     
@@ -186,13 +187,17 @@ class Task < WEBrick::HTTPServlet::AbstractServlet
       plug.gsub!('Nginx','<font color="green">Nginx</font>')
       plug.gsub!('nginx','<font color="green">nginx</font>')
       plug.gsub!('Apache','<font color="green">Apache</font>')
+      plug.gsub!('login','<font color="red">login</font>')
+      plug.gsub!('manager','<font color="red">manager</font>')
+      plug.gsub!('jenkins','<font color="red">jekins</font>')
       plug.gsub!('登陆','<font color="red">登陆</font>')
       plug.gsub!('管理','<font color="red">管理</font>')
       plug.gsub!('admin','<font color="red">admin</font>')
+      plug.gsub!(/password/i,'<font color="red">password</font>')
 
       body += '<tr>'
       body += "<td>#{count}</td>"
-      body += "<td>#{data['target']}</td>"
+      body += "<td width='20'><a title='#{data['target']}' href='#{data['target']}'>#{data['target'][0..32]}</a></td>"
       body += "<td>#{plug}</td>"
       body += '</tr>'
     end

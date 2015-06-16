@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'webrick'
 
 config = { :Realm => 'BasicAuth example realm' }
