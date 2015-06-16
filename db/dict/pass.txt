@@ -4,6 +4,3 @@ admin
 test
 tomcat
 manager
-xiaomi2015
-xiaomi_2015
-xiaomi
