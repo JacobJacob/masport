@@ -1,7 +1,3 @@
 /log/*
-/db/main.db
-/db/dnsenum/*
-/db/masscan/*
-/db/whatweb/*
-/db/nmap/*
+/db/*
 paused.conf
