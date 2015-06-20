@@ -4,3 +4,4 @@
 /db/masscan/*
 /db/whatweb/*
 /db/nmap/*
+paused.conf
